@@ -10,7 +10,7 @@ class YoutubeDataset(Dataset):
         self.base_dir = base_dir
         self.pathset = []
         for a in self.dir_list:
-            j, m = a.split(' ')
+            j, m = a.strip().split(' ')
             full_path_j = osp.join(self.base_dir, j, "*.png")
             full_path_m = osp.join(self.base_dir, m, "*.png")
             m_path = sorted(glob(full_path_m))
