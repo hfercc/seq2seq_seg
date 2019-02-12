@@ -48,6 +48,6 @@ class YoutubeDataset(Dataset):
 if __name__ == '__main__':
     dataset = YoutubeDataset()
     print(len(dataset))
-    for d in dataset:
-        print(d)
+    for (j,m) in dataset:
+        print(j.shape)
         break
