@@ -1,4 +1,5 @@
 from torch.utils.data import Dataset, DataLoader
+import torch
 from PIL import Image
 import torchvision.transforms as transforms
 from glob import glob 
@@ -39,6 +40,8 @@ class YoutubeDataset(Dataset):
             img = Image.open(mp)
             img = self.transforms(img)
             m.append(img)
+        j = torch.stack(j, 0)
+        m = torch.stack(m, 0)
         return j, m
 
     def __len__(self):
