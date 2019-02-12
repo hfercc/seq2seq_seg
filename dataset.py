@@ -40,8 +40,8 @@ class YoutubeDataset(Dataset):
             img = Image.open(mp)
             img = self.transforms(img)
             m.append(img)
-        j = torch.stack(j, 0)
-        m = torch.stack(m, 0)
+        j = torch.stack(j, 1)
+        m = torch.stack(m, 1)
         print(m.shape)
         return j, m
 
