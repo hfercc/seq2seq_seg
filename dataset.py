@@ -16,7 +16,7 @@ class YoutubeDataset(Dataset):
             m_path = sorted(glob(full_path_m))
             j_path = sorted(glob(full_path_j))
             for i in range(len(m_path) - seq_len + 1):
-                self.pathset.append((j_path[i, i + seq_len], m_path[i, i + seq_len]))
+                self.pathset.append((j_path[i:i + seq_len], m_path[i:i + seq_len]))
 
     def __len__(self):
         return len(self.pathset)
