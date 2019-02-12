@@ -42,6 +42,7 @@ class YoutubeDataset(Dataset):
             m.append(img)
         j = torch.stack(j, 0)
         m = torch.stack(m, 0)
+        print(m.shape)
         return j, m
 
     def __len__(self):
