@@ -235,7 +235,7 @@ if __name__ == '__main__':
         target = target.view(-1, 4, 256*448)
         print(target.shape)
         print(output.shape)
-        loss = criterion(output[:, 0, :, :], target[:, 0, :, :])
+        loss = criterion(output[:, 0, :, :], target[:, 0, :])
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
