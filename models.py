@@ -171,14 +171,16 @@ class VOS(nn.Module):
             nn.Sigmoid()
         )
 
-    def forward(self, x, mask):
+    def forward(self, x, mask, t):
         frame0 = x[:, :3, :, :]
         mask0 = mask[:, :1, :, :]
+        t.track()
         output = []
         init_input = torch.cat((frame0, mask0), 1)
         tmp = self.initializer(init_input)
         c = self.init_a(tmp)
         h = self.init_b(tmp)
+        t.track()
         for i in range(1, int(x.shape[1] / 3)):
             f = x[:, 3*i:3*i+3, :, :]
             f = self.enc1(f)
@@ -195,7 +197,7 @@ class VOS(nn.Module):
             size = f.size()
             f = self.enc5(f)
             f, id5 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
-
+            t.track()
             c, h = self.state[i](f, (c, h))
             y = F.max_unpool2d(h, id5, 2, 2, output_size = size)
             y = self.dec1(y)
@@ -215,6 +217,7 @@ class VOS(nn.Module):
             y = self.out(y)
 
             output.append(y)
+            t.track()
         output = torch.cat(output, 1)
         output = output.view(-1, (self.seq - 1), 2, 256 * 448)
         return output
