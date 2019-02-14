@@ -212,7 +212,6 @@ class VOS(nn.Module):
             y = self.out(y)
 
             output.append(y)
-            print(y.shape)
         output = torch.cat(output, 1)
         return output
 
