@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torchvision.models as models
 import torch.nn.functional as F
+from dataset import YoutubeDataset
 
 class ConvLSTMCell(nn.Module):
     """
@@ -189,9 +190,13 @@ class VOS(nn.Module):
         return output
 
 if __name__ == '__main__':
+    dataset = YoutubeDataset()
+    train_loader = DataLoader(dataset, batch_size=2, shuffle=True, num_workers=2)
     model = VOS(5)
-    a = torch.randn((3, 15, 256, 448))
-    b = torch.randn((3, 5, 256, 448))
+    for (a,b) in train_loader:
+        print(a.shape)
+        print(b.shape)
+        break
     output = model(a, b)
     print(output.shape)
 
