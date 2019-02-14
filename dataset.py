@@ -39,6 +39,7 @@ class YoutubeDataset(Dataset):
         for mp in m_path:
             img = Image.open(mp)
             img = self.transforms(img)
+            img[img > 1] = 0
             m.append(img)
         j = torch.cat(j, 0)
         m = torch.cat(m, 0)
