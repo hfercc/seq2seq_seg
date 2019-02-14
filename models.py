@@ -4,7 +4,7 @@ import torchvision.models as models
 import torch.nn.functional as F
 from dataset import YoutubeDataset
 from torch.utils.data import DataLoader
-
+from tqdm import tqdm
 class ConvLSTMCell(nn.Module):
     """
     Generate a convolutional LSTM cell
