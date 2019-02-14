@@ -1,4 +1,5 @@
 from models import VOS
+import numpy as np
 import torch
 def modelsize(model, input, type_size=4):
     para = sum([np.prod(list(p.size())) for p in model.parameters()])
