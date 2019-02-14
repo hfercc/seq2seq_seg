@@ -4,7 +4,7 @@ from PIL import Image
 import torchvision.transforms as transforms
 from glob import glob 
 import os.path as osp
-
+import cv2
 default_transforms = transforms.Compose([
     transforms.Resize((256,448)),
     transforms.ToTensor()
@@ -37,10 +37,11 @@ class YoutubeDataset(Dataset):
             img = self.transforms(img)
             j.append(img)
         for mp in m_path:
-            img = Image.open(mp)
-            img = self.transforms(img)
-            img[img > 1 / 255] = 0
-            print(img)
+            img = cv2.imread(mp)
+
+            img = cv2.resize(mp, (256, 448))
+            img[img > 1] = 0
+            #/print(img)
             m.append(img)
         j = torch.cat(j, 0)
         m = torch.cat(m, 0)

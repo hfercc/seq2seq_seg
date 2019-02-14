@@ -5,6 +5,7 @@ import torch.nn.functional as F
 from dataset import YoutubeDataset
 from torch.utils.data import DataLoader
 
+loss = nn.CrossEntropyLoss()
 class ConvLSTMCell(nn.Module):
     """
     Generate a convolutional LSTM cell
@@ -225,5 +226,7 @@ if __name__ == '__main__':
         print(b.shape)
         break
     output = model(a, b)
+    target = b[:, 1:, :, :]
+
     print(output.shape)
 
