@@ -189,7 +189,7 @@ class VOS(nn.Module):
         return output
 
 if __name__ == '__main__':
-    model = VOS(2)
+    model = VOS(5)
     a = torch.randn((3, 15, 256, 448))
     b = torch.randn((3, 5, 256, 448))
     output = model(a, b)
