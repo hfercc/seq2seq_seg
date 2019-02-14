@@ -237,9 +237,9 @@ if __name__ == '__main__':
     for (a,b) in logger:
         a = a.float().cuda()
         b = b.float().cuda()
-        gpu.tracker()
+        gpu_tracker.track()
         output = model(a, b)
-        gpu.tracker()
+        gpu_tracker.track()
         '''
         target = b[:, 1:, :, :]
         target = target.long().cuda()
