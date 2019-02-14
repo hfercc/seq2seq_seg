@@ -185,7 +185,7 @@ class VOS(nn.Module):
 
             output.append(y)
             print(y.shape)
-        output = torch.stack(output, 1)
+        output = torch.cat(output, 1)
         return output
 
 if __name__ == '__main__':
