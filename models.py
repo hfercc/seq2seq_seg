@@ -224,7 +224,7 @@ if __name__ == '__main__':
     model = VOS(5)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     j = 0
-    for (a,b) in train_loader:
+    for (a,b) in tqdm(train_loader):
         a = a.float()
         b = b.float()
         output = model(a, b)
