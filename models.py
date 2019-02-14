@@ -230,6 +230,7 @@ if __name__ == '__main__':
         a = a.float().cuda()
         b = b.float().cuda()
         output = model(a, b)
+        '''
         target = b[:, 1:, :, :]
         target = target.long().cuda()
         target = target.view(-1, 4, 256*448)
@@ -240,6 +241,7 @@ if __name__ == '__main__':
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+        '''
         logger.set_description("{}:Loss:{}".format(j, train_loss))
         j += 1
 
