@@ -40,7 +40,7 @@ class YoutubeDataset(Dataset):
             img = Image.open(mp)
             img = self.transforms(img)
             print(img)
-            img[img > 1] = 0
+            img[img > 1 / 255] = 0
             m.append(img)
         j = torch.cat(j, 0)
         m = torch.cat(m, 0)
