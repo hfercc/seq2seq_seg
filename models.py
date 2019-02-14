@@ -62,6 +62,7 @@ class VOS(nn.Module):
         nn.init.xavier_uniform_(self.init_a.weight)
         nn.init.xavier_uniform_(self.init_b.weight)
         self.state = [ConvLSTMCell() for i in range(seq)]
+        self.seq = seq
         # Encoder 
 
         self.enc1 = nn.Sequential(
@@ -213,6 +214,7 @@ class VOS(nn.Module):
 
             output.append(y)
         output = torch.cat(output, 1)
+        output = output.view(-1, (self.seq - 1) * 2, 256 * 448)
         return output
 
 if __name__ == '__main__':
@@ -225,13 +227,12 @@ if __name__ == '__main__':
     for (a,b) in train_loader:
         a = a.float()
         b = b.float()
-        print(a.shape)
-        print(b.shape)
         output = model(a, b)
         target = b[:, 2:, :, :]
         target = target.long()
-        print(output.shape)
+        target = target.view(-1, 8, 256*448)
         print(target.shape)
+        print(output.shape)
         loss = criterion(output[:, 0, :, :], target[:, 0, :, :])
         optimizer.zero_grad()
         loss.backward()
