@@ -228,6 +228,8 @@ if __name__ == '__main__':
         output = model(a, b)
         target = b[:, 1:, :, :]
         target = target.long()
+        print(output.shape)
+        print(target.shape)
         loss = criterion(output, target)
         optimizer.zero_grad()
         loss.backward()
