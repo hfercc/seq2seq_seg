@@ -226,7 +226,7 @@ if __name__ == '__main__':
         a = a.float()
         b = b.float()
         output = model(a, b)
-        target = b[:, 1:, :, :]
+        target = b[:, 2:, :, :]
         target = target.long()
         print(output.shape)
         print(target.shape)
