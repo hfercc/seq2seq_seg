@@ -41,7 +41,7 @@ class YoutubeDataset(Dataset):
 
             img = cv2.resize(img, (256, 448))
             img[img > 1] = 0
-            img = torch.from_numpy(img)
+            img = torch.from_numpy(img).float()
             #/print(img)
             m.append(img)
         j = torch.cat(j, 0)
