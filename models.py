@@ -225,6 +225,8 @@ if __name__ == '__main__':
     for (a,b) in train_loader:
         a = a.float()
         b = b.float()
+        print(a.shape)
+        print(b.shape)
         output = model(a, b)
         target = b[:, 2:, :, :]
         target = target.long()
