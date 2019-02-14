@@ -148,8 +148,8 @@ class VOS(nn.Module):
         tmp = self.initializer(init_input)
         c = self.init_a(tmp)
         h = self.init_b(tmp)
-        for i in range(1, x.shape[1] / 3):
-            f = x[:, 3*i:3*i+2, :, :].unsqueeze(0)
+        for i in range(1, int(x.shape[1] / 3)):
+            f = x[:, 3*i:3*i+3, :, :]
             f = self.enc1(f)
             f, id1 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
 
