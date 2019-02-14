@@ -224,7 +224,8 @@ if __name__ == '__main__':
     model = VOS(5)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     j = 0
-    for (a,b) in tqdm(train_loader):
+    logger = tqdm(train_loader)
+    for (a,b) in logger:
         a = a.float()
         b = b.float()
         output = model(a, b)
@@ -237,6 +238,7 @@ if __name__ == '__main__':
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        print("{}:Loss:{}".format(j, loss.item()))
+        logger.set_description("{}:Loss:{}".format(j, loss.item()))
         j += 1
+
 
