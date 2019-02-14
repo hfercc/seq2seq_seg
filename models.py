@@ -56,7 +56,7 @@ class VOS(nn.Module):
     def __init__(self, seq):
         super(VOS, self).__init__()
         self.initializer = models.vgg16(pretrained=True).features
-        self.initializer[0] = nn.Conv2d(5, 64, 3, 1, 1)
+        self.initializer[0] = nn.Conv2d(4, 64, 3, 1, 1)
         self.init_a = nn.Conv2d(512, 512, 1)
         self.init_b = nn.Conv2d(512, 512, 1)
         nn.init.xavier_uniform_(self.init_a.weight)
