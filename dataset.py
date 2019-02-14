@@ -39,7 +39,7 @@ class YoutubeDataset(Dataset):
         for mp in m_path:
             img = cv2.imread(mp)
 
-            img = cv2.resize(mp, (256, 448))
+            img = cv2.resize(img, (256, 448))
             img[img > 1] = 0
             #/print(img)
             m.append(img)
