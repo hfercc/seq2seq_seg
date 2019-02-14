@@ -56,7 +56,7 @@ class VOS(nn.Module):
     def __init__(self, seq):
         super(VOS, self).__init__()
         self.initializer = models.vgg16(pretrained=True).features
-        self.initializer[0] = nn.Conv2d(4, 64, 3, 1, 1)
+        self.initializer[0] = nn.Conv2d(5, 64, 3, 1, 1)
         self.init_a = nn.Conv2d(512, 512, 1)
         self.init_b = nn.Conv2d(512, 512, 1)
         nn.init.xavier_uniform_(self.init_a.weight)
@@ -164,7 +164,7 @@ class VOS(nn.Module):
         )
 
         self.out = nn.Sequential(
-            nn.Conv2d(64, 1, kernel_size=5, padding=2),
+            nn.Conv2d(64, 2, kernel_size=5, padding=2),
             nn.Sigmoid()
         )
 
@@ -231,8 +231,6 @@ if __name__ == '__main__':
         print(output.shape)
         print(target.shape)
         loss = criterion(output[:, 0, :, :], target[:, 0, :, :])
-        for i in range(1, 5 - 1):
-            loss += criterion(output[:, i, :, :], target[:, i, :, :])
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()

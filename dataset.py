@@ -41,12 +41,13 @@ class YoutubeDataset(Dataset):
             img = cv2.imread(mp)
 
             img = cv2.resize(img, (256, 448))
-            img[img > 1] = 0
-            img = img[:,:,0][...,np.newaxis]
-            img = np.transpose(img, (2, 1, 0))
-            img = torch.from_numpy(img)
+            mask = np.zeros((2, 256, 448))
+            img = img[:,:,0]
+            mask[1][img == 1] = 1
+            mask[0][img == 0] = 1
+            mask = torch.from_numpy(mask)
             #/print(img)
-            m.append(img)
+            m.append(mask)
         j = torch.cat(j, 0)
         m = torch.cat(m, 0)
         return j, m
