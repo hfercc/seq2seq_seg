@@ -1,6 +1,7 @@
 from models import VOS
 import numpy as np
 import torch
+import torch.nn as nn
 def modelsize(model, input, type_size=4):
     para = sum([np.prod(list(p.size())) for p in model.parameters()])
     print('Model {} : params: {:4f}M'.format(model._get_name(), para * type_size / 1000 / 1000))
