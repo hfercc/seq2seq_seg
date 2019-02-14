@@ -214,7 +214,7 @@ class VOS(nn.Module):
 
             output.append(y)
         output = torch.cat(output, 1)
-        output = output.view(-1, (self.seq - 1) * 2, 256 * 448)
+        output = output.view(-1, (self.seq - 1), 2, 256 * 448)
         return output
 
 if __name__ == '__main__':
@@ -230,7 +230,7 @@ if __name__ == '__main__':
         output = model(a, b)
         target = b[:, 2:, :, :]
         target = target.long()
-        target = target.view(-1, 8, 256*448)
+        target = target.view(-1, 4, 2, 256*448)
         print(target.shape)
         print(output.shape)
         loss = criterion(output[:, 0, :, :], target[:, 0, :, :])
