@@ -36,16 +36,12 @@ class YoutubeDataset(Dataset):
             img = Image.open(jp)
             img = self.transforms(img)
             j.append(img)
-            print(img.shape)
         for mp in m_path:
             img = Image.open(mp)
             img = self.transforms(img)
             m.append(img)
-            print(img.shape)
         j = torch.cat(j, 0)
         m = torch.cat(m, 0)
-        print(j.shape)
-        print(m.shape)
         return j, m
 
     def __len__(self):
