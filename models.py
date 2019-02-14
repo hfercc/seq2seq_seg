@@ -5,7 +5,6 @@ import torch.nn.functional as F
 from dataset import YoutubeDataset
 from torch.utils.data import DataLoader
 
-loss = nn.CrossEntropyLoss()
 class ConvLSTMCell(nn.Module):
     """
     Generate a convolutional LSTM cell
@@ -219,14 +218,19 @@ class VOS(nn.Module):
 
 if __name__ == '__main__':
     dataset = YoutubeDataset()
+    criterion = nn.CrossEntropyLoss()
     train_loader = DataLoader(dataset, batch_size=2, shuffle=True, num_workers=2)
     model = VOS(5)
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    i = 0
     for (a,b) in train_loader:
-        print(a.shape)
-        print(b.shape)
-        break
-    output = model(a, b)
-    target = b[:, 1:, :, :]
+        output = model(a, b)
+        target = b[:, 1:, :, :]
 
-    print(output.shape)
+        loss = criterion(output, target)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+        print("{}:Loss:{}".format(i, loss.item()))
+        i += 1
 
