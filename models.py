@@ -230,7 +230,7 @@ if __name__ == '__main__':
         output = model(a, b)
         target = b[:, 2:, :, :]
         target = target.long()
-        target = target.view(-1, 4, 2, 256*448)
+        target = target.view(-1, 4, 256*448)
         print(target.shape)
         print(output.shape)
         loss = criterion(output[:, 0, :, :], target[:, 0, :, :])
