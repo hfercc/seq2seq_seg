@@ -259,7 +259,8 @@ if __name__ == '__main__':
         loss.backward()
         optimizer.step()
         gpu_tracker.track()
-        logger.set_description("{}:Loss:{}".format(j, loss.item()))
+        print(loss.data)
+        logger.set_description("{}:Loss:{}".format(j, loss.data[0]))
         j += 1
 
 
