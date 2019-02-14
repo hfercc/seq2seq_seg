@@ -212,6 +212,7 @@ class VOS(nn.Module):
             y = self.dec4(y)
 
             y = F.max_unpool2d(y, id1, 2, 2)
+            del id1, id2, id3, id4, id5
             y = self.dec5(y)
 
             y = self.out(y)
@@ -232,15 +233,15 @@ if __name__ == '__main__':
     gpu_tracker = MemTracker(frame)
 
     gpu_tracker.track()
-    model.cuda()
+    model.cuda().half()
     gpu_tracker.track()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     j = 0
     logger = tqdm(train_loader)
     for (a,b) in logger:
-        a = a.float().cuda()
+        a = a.half().cuda()
         gpu_tracker.track()
-        b = b.float().cuda()
+        b = b.half().cuda()
         gpu_tracker.track()
         output = model(a, b, gpu_tracker)
         gpu_tracker.track()
