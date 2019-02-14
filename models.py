@@ -222,10 +222,8 @@ if __name__ == '__main__':
     criterion = nn.CrossEntropyLoss()
     train_loader = DataLoader(dataset, batch_size=1, shuffle=True, num_workers=2)
     model = VOS(5)
-    model = nn.DataParallel(model)
     model.cuda()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-    optimizer = nn.DataParallel(optimizer)
     j = 0
     logger = tqdm(train_loader)
     for (a,b) in logger:
