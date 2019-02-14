@@ -222,15 +222,18 @@ if __name__ == '__main__':
     criterion = nn.CrossEntropyLoss()
     train_loader = DataLoader(dataset, batch_size=2, shuffle=True, num_workers=2)
     model = VOS(5)
+    model = nn.DataParallel(model)
+    model.cuda()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    optimizer = nn.DataParallel(optimizer)
     j = 0
     logger = tqdm(train_loader)
     for (a,b) in logger:
-        a = a.float()
-        b = b.float()
+        a = a.float().cuda()
+        b = b.float().cuda()
         output = model(a, b)
         target = b[:, 1:, :, :]
-        target = target.long()
+        target = target.long().cuda()
         target = target.view(-1, 4, 256*448)
         loss = criterion(output[:, 0, :, :], target[:, 0, :])
         for i in range(1, 4):
