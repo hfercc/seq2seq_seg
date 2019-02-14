@@ -3,6 +3,7 @@ import torch
 from PIL import Image
 import torchvision.transforms as transforms
 from glob import glob 
+import numpy as np
 import os.path as osp
 import cv2
 default_transforms = transforms.Compose([
