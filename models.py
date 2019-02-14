@@ -170,7 +170,7 @@ class VOS(nn.Module):
 
     def forward(self, x, mask):
         frame0 = x[:, :3, :, :]
-        mask0 = mask[:, 0, :, :].unsqueeze(1)
+        mask0 = mask[:, :2, :, :].unsqueeze(1)
         output = []
         init_input = torch.cat((frame0, mask0), 1)
         tmp = self.initializer(init_input)
