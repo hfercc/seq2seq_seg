@@ -230,7 +230,8 @@ if __name__ == '__main__':
         target = target.long()
         print(output.shape)
         print(target.shape)
-        for i in range(1, 5):
+        loss = criterion(output[:, 0, :, :], target[:, 0, :, :])
+        for i in range(1, 5 - 1):
             loss += criterion(output[:, i, :, :], target[:, i, :, :])
         optimizer.zero_grad()
         loss.backward()
