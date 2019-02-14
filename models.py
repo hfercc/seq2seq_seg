@@ -5,6 +5,8 @@ import torch.nn.functional as F
 from dataset import YoutubeDataset
 from torch.utils.data import DataLoader
 from tqdm import tqdm
+import inspect
+from gpu_mem_track import MemTracker
 class ConvLSTMCell(nn.Module):
     """
     Generate a convolutional LSTM cell
@@ -223,7 +225,12 @@ if __name__ == '__main__':
     criterion = nn.CrossEntropyLoss()
     train_loader = DataLoader(dataset, batch_size=1, shuffle=True, num_workers=2)
     model = VOS(5)
+    frame = inspect.currentframe()
+    gpu_tracker = MemTracker(frame)
+
+    gpu_tracker.track()
     model.cuda()
+    gpu_tracker.track()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     j = 0
     logger = tqdm(train_loader)
