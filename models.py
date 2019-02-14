@@ -233,13 +233,14 @@ if __name__ == '__main__':
         target = b[:, 1:, :, :]
         target = target.long().cuda()
         target = target.view(-1, 4, 256*448)
-        loss = criterion(output[:, 0, :, :], target[:, 0, :])
-        for i in range(1, 4):
-            loss += criterion(output[:, i, :, :], target[:, i, :])
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-        logger.set_description("{}:Loss:{}".format(j, loss.item()))
+        train_loss = 0
+        for i in range(4):
+            loss = criterion(output[:, i, :, :], target[:, i, :])
+            train_loss += loss.item()
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+        logger.set_description("{}:Loss:{}".format(j, train_loss))
         j += 1
 
 
