@@ -220,7 +220,7 @@ class VOS(nn.Module):
 if __name__ == '__main__':
     dataset = YoutubeDataset()
     criterion = nn.CrossEntropyLoss()
-    train_loader = DataLoader(dataset, batch_size=2, shuffle=True, num_workers=2)
+    train_loader = DataLoader(dataset, batch_size=1, shuffle=True, num_workers=2)
     model = VOS(5)
     model = nn.DataParallel(model)
     model.cuda()
