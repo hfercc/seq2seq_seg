@@ -245,18 +245,18 @@ if __name__ == '__main__':
         gpu_tracker.track()
         output = model(a, b, gpu_tracker)
         gpu_tracker.track()
-        '''
         target = b[:, 1:, :, :]
         target = target.long().cuda()
         target = target.view(-1, 4, 256*448)
         train_loss = 0
+        gpu_tracker.track()
         for i in range(4):
             loss = criterion(output[:, i, :, :], target[:, i, :])
             train_loss += loss.item()
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-        '''
+            gpu_tracker.track()
         logger.set_description("{}:Loss:{}".format(j, train_loss))
         j += 1
 
