@@ -223,6 +223,8 @@ if __name__ == '__main__':
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     i = 0
     for (a,b) in train_loader:
+        a = a.float()
+        b = b.float()
         output = model(a, b)
         target = b[:, 1:, :, :]
         target = target.long()
