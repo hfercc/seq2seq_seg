@@ -225,7 +225,7 @@ if __name__ == '__main__':
     for (a,b) in train_loader:
         output = model(a, b)
         target = b[:, 1:, :, :]
-
+        target = target.long()
         loss = criterion(output, target)
         optimizer.zero_grad()
         loss.backward()
