@@ -68,100 +68,100 @@ class VOS(nn.Module):
         self.enc1 = nn.Sequential(
             nn.Conv2d(3, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
             nn.BatchNorm2d(64),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
             nn.Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
             nn.BatchNorm2d(64),
-            nn.ReLU()
+            nn.ReLU(inplace=True)
         )
         self.enc2 = nn.Sequential(
             nn.Conv2d(64, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
             nn.BatchNorm2d(128),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
             nn.Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
             nn.BatchNorm2d(128),
-            nn.ReLU()
+            nn.ReLU(inplace=True)
         )
         self.enc3 = nn.Sequential(
             nn.Conv2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
             nn.BatchNorm2d(256),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
             nn.Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
             nn.BatchNorm2d(256),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
             nn.Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
             nn.BatchNorm2d(256),
-            nn.ReLU()
+            nn.ReLU(inplace=True)
         )
         self.enc4 = nn.Sequential(
             nn.Conv2d(256, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
             nn.BatchNorm2d(512),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
             nn.Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
             nn.BatchNorm2d(512),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
             nn.Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
             nn.BatchNorm2d(512),
-            nn.ReLU()
+            nn.ReLU(inplace=True)
         )
         self.enc5 = nn.Sequential(
             nn.Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
             nn.BatchNorm2d(512),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
             nn.Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
             nn.BatchNorm2d(512),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
             nn.Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
             nn.BatchNorm2d(512),
-            nn.ReLU()
+            nn.ReLU(inplace=True)
         )
         self.dec1 = nn.Sequential(
             nn.Conv2d(512, 512, kernel_size=5, padding=2),
             nn.BatchNorm2d(512),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
             nn.Conv2d(512, 512, kernel_size=5, padding=2),
             nn.BatchNorm2d(512),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
             nn.Conv2d(512, 512, kernel_size=5, padding=2),
             nn.BatchNorm2d(512),
-            nn.ReLU()
+            nn.ReLU(inplace=True)
         )
         self.dec2 = nn.Sequential(
             nn.Conv2d(512, 512, kernel_size=5, padding=2),
             nn.BatchNorm2d(512),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
             nn.Conv2d(512, 512, kernel_size=5, padding=2),
             nn.BatchNorm2d(512),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
             nn.Conv2d(512, 256, kernel_size=5, padding=2),
             nn.BatchNorm2d(256),
-            nn.ReLU()
+            nn.ReLU(inplace=True)
         )
         self.dec3 = nn.Sequential(
             nn.Conv2d(256, 256, kernel_size=5, padding=2),
             nn.BatchNorm2d(256),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
             nn.Conv2d(256, 256, kernel_size=5, padding=2),
             nn.BatchNorm2d(256),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
             nn.Conv2d(256, 128, kernel_size=5, padding=2),
             nn.BatchNorm2d(128),
-            nn.ReLU()
+            nn.ReLU(inplace=True)
         )
         self.dec4 = nn.Sequential(
             nn.Conv2d(128, 128, kernel_size=5, padding=2),
             nn.BatchNorm2d(128),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
             nn.Conv2d(128, 128, kernel_size=5, padding=2),
             nn.BatchNorm2d(128),
-            nn.ReLU(),
+            nn.ReLU(inplace=True),
             nn.Conv2d(128, 64, kernel_size=5, padding=2),
             nn.BatchNorm2d(64),
-            nn.ReLU()
+            nn.ReLU(inplace=True)
         )
         self.dec5 = nn.Sequential(
             nn.Conv2d(64, 64, kernel_size=5, padding=2),
             nn.BatchNorm2d(64),
-            nn.ReLU()
+            nn.ReLU(inplace=True)
         )
 
         self.out = nn.Sequential(
@@ -218,6 +218,7 @@ class VOS(nn.Module):
         return output
 
 if __name__ == '__main__':
+    torch.backends.cudnn.benchmark = True
     dataset = YoutubeDataset()
     criterion = nn.CrossEntropyLoss()
     train_loader = DataLoader(dataset, batch_size=1, shuffle=True, num_workers=2)
