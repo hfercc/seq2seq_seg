@@ -236,6 +236,8 @@ if __name__ == '__main__':
         print(target.shape)
         print(output.shape)
         loss = criterion(output[:, 0, :, :], target[:, 0, :])
+        for i in rnage(1, 4):
+            loss += criterion(output[:, i, :, :], target[:, i, :])
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
