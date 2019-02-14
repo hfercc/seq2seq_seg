@@ -223,7 +223,7 @@ if __name__ == '__main__':
     train_loader = DataLoader(dataset, batch_size=2, shuffle=True, num_workers=2)
     model = VOS(5)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
-    i = 0
+    j = 0
     for (a,b) in train_loader:
         a = a.float()
         b = b.float()
@@ -241,6 +241,6 @@ if __name__ == '__main__':
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        print("{}:Loss:{}".format(i, loss.item()))
-        i += 1
+        print("{}:Loss:{}".format(j, loss.item()))
+        j += 1
 
