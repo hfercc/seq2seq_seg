@@ -210,11 +210,13 @@ class VOS(nn.Module):
         f, id5 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
         f = f.view(-1, self.seq - 1, 512, 8, 14)
         print(f.shape)
+        t.track()
         for i in range(self.seq - 1):
             c, h = checkpoint(
                 self.convlstm(i), f[:, i, :, :, :], c, h
             )
             output.append(h)
+        t.track()
         output = torch.cat(output, 0)
         print(output.shape)
         output = output.view(self.seq - 1, 512, 8, 14)
