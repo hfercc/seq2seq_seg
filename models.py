@@ -182,7 +182,8 @@ class VOS(nn.Module):
         c = self.init_a(tmp)
         h = self.init_b(tmp)
         t.track()
-        f = x[:, 1:, :, :]
+
+        f = x[:, 3:, :, :]
         f = f.view(-1, 3, 256, 448)
         print(f.shape)
         f = self.enc1(f)
