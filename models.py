@@ -248,7 +248,7 @@ if __name__ == '__main__':
         gpu_tracker.track()
         b = b.float().cuda()
         gpu_tracker.track()
-        output = checkpoint_sequential(model, 5, a, b)
+        output = model(a, b)
         output.sum().backward()
         gpu_tracker.track()
         target = b[:, 1:, :, :]
