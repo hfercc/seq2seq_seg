@@ -212,7 +212,7 @@ class VOS(nn.Module):
         print(f.shape)
         for i in range(self.seq - 1):
             c, h = checkpoint(
-                self.state[i], f[:, i, :, :, :], c, h
+                self.convlstm(i), f[:, i, :, :, :], c, h
             )
             output.append(h)
         output = torch.cat(output, 0)
