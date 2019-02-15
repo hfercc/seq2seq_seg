@@ -201,7 +201,7 @@ class VOS(nn.Module):
         f = self.enc5(f)
         f, id5 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
         f = f.view(-1, self.seq - 1, 512, 8, 14)
-        for i in range(self.seq):
+        for i in range(self.seq - 1):
             c, h = self.state[i](f[:, i, :, :, :], (c, h))
             output.append(h)
         output = torch.cat(output, 0)
