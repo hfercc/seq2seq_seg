@@ -248,7 +248,7 @@ if __name__ == '__main__':
         gpu_tracker.track()
         b = b.float().cuda()
         gpu_tracker.track()
-        output = model(a, b)
+        output = model(a, b, gpu_tracker)
         output.sum().backward()
         gpu_tracker.track()
         target = b[:, 1:, :, :]
