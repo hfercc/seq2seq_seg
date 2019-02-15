@@ -188,19 +188,21 @@ class VOS(nn.Module):
         print(f.shape)
         f = self.enc1(f)
         f, id1 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
-
+        print(f.shape)
         f = self.enc2(f)
         f, id2 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
-
+        print(f.shape)
         f = self.enc3(f)
         f, id3 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
-
+        print(f.shape)
         f = self.enc4(f)
         f, id4 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
         size = f.size()
+        print(f.shape)
         f = self.enc5(f)
         f, id5 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
         f = f.view(-1, self.seq - 1, 512, 8, 14)
+        print(f.shape)
         for i in range(self.seq - 1):
             c, h = self.state[i](f[:, i, :, :, :], (c, h))
             output.append(h)
