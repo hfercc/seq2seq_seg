@@ -182,8 +182,8 @@ class VOS(nn.Module):
         c = self.init_a(tmp)
         h = self.init_b(tmp)
         t.track()
-        x = x.view(-1, 3, 256, 448)
-        f = x[3:, :, :, :]
+        f = x[:, 1:, :, :]
+        f = f.view(-1, 3, 256, 448)
         print(f.shape)
         f = self.enc1(f)
         f, id1 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
