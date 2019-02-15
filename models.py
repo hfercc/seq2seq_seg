@@ -7,6 +7,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 import inspect
 from gpu_mem_track import MemTracker
+from torch.utils.checkpoint import checkpoint_sequential
 class ConvLSTMCell(nn.Module):
     """
     Generate a convolutional LSTM cell
@@ -229,6 +230,7 @@ if __name__ == '__main__':
     criterion = nn.CrossEntropyLoss()
     train_loader = DataLoader(dataset, batch_size=1, shuffle=True, num_workers=2)
     model = VOS(5)
+
     frame = inspect.currentframe()
     gpu_tracker = MemTracker(frame)
 
@@ -243,7 +245,8 @@ if __name__ == '__main__':
         gpu_tracker.track()
         b = b.float().cuda()
         gpu_tracker.track()
-        output = model(a, b, gpu_tracker)
+        output = checkpoint_sequential(model, 5, a, b)
+        output.sum().backward()
         gpu_tracker.track()
         target = b[:, 1:, :, :]
         target = target.long().cuda()
