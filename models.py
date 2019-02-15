@@ -239,7 +239,7 @@ if __name__ == '__main__':
     j = 0
     logger = tqdm(train_loader)
     for (a,b) in logger:
-        a = a.float()cuda()
+        a = a.float().cuda()
         gpu_tracker.track()
         b = b.float().cuda()
         gpu_tracker.track()
