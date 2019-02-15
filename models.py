@@ -60,14 +60,11 @@ class VOS(nn.Module):
         super(VOS, self).__init__()
         self.initializer = models.vgg16(pretrained=True).features
         self.initializer[0] = nn.Conv2d(4, 64, 3, 1, 1)
-        self.initializer.cuda(0)
         self.init_a = nn.Conv2d(512, 512, 1)
         self.init_b = nn.Conv2d(512, 512, 1)
         nn.init.xavier_uniform_(self.init_a.weight)
         nn.init.xavier_uniform_(self.init_b.weight)
-        self.state = [ConvLSTMCell().cuda(0) for i in range(seq)]
-        self.init_a.cuda(0)
-        self.init_b.cuda(0)
+        self.state = [ConvLSTMCell().cuda() for i in range(seq)]
         self.seq = seq
         # Encoder 
 
@@ -78,7 +75,7 @@ class VOS(nn.Module):
             nn.Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
             nn.BatchNorm2d(64),
             nn.ReLU(inplace=True)
-        ).cuda(0)
+        )
         self.enc2 = nn.Sequential(
             nn.Conv2d(64, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
             nn.BatchNorm2d(128),
@@ -86,7 +83,7 @@ class VOS(nn.Module):
             nn.Conv2d(128, 128, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
             nn.BatchNorm2d(128),
             nn.ReLU(inplace=True)
-        ).cuda(0)
+        )
         self.enc3 = nn.Sequential(
             nn.Conv2d(128, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
             nn.BatchNorm2d(256),
@@ -97,7 +94,7 @@ class VOS(nn.Module):
             nn.Conv2d(256, 256, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
             nn.BatchNorm2d(256),
             nn.ReLU(inplace=True)
-        ).cuda(0)
+        )
         self.enc4 = nn.Sequential(
             nn.Conv2d(256, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
             nn.BatchNorm2d(512),
@@ -108,7 +105,7 @@ class VOS(nn.Module):
             nn.Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
             nn.BatchNorm2d(512),
             nn.ReLU(inplace=True)
-        ).cuda(0)
+        )
         self.enc5 = nn.Sequential(
             nn.Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
             nn.BatchNorm2d(512),
@@ -119,7 +116,7 @@ class VOS(nn.Module):
             nn.Conv2d(512, 512, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1)),
             nn.BatchNorm2d(512),
             nn.ReLU(inplace=True)
-        ).cuda(0)
+        )
         self.dec1 = nn.Sequential(
             nn.Conv2d(512, 512, kernel_size=5, padding=2),
             nn.BatchNorm2d(512),
@@ -130,7 +127,7 @@ class VOS(nn.Module):
             nn.Conv2d(512, 512, kernel_size=5, padding=2),
             nn.BatchNorm2d(512),
             nn.ReLU(inplace=True)
-        ).cuda(1)
+        )
         self.dec2 = nn.Sequential(
             nn.Conv2d(512, 512, kernel_size=5, padding=2),
             nn.BatchNorm2d(512),
@@ -141,7 +138,7 @@ class VOS(nn.Module):
             nn.Conv2d(512, 256, kernel_size=5, padding=2),
             nn.BatchNorm2d(256),
             nn.ReLU(inplace=True)
-        ).cuda(1)
+        )
         self.dec3 = nn.Sequential(
             nn.Conv2d(256, 256, kernel_size=5, padding=2),
             nn.BatchNorm2d(256),
@@ -152,7 +149,7 @@ class VOS(nn.Module):
             nn.Conv2d(256, 128, kernel_size=5, padding=2),
             nn.BatchNorm2d(128),
             nn.ReLU(inplace=True)
-        ).cuda(1)
+        )
         self.dec4 = nn.Sequential(
             nn.Conv2d(128, 128, kernel_size=5, padding=2),
             nn.BatchNorm2d(128),
@@ -163,18 +160,25 @@ class VOS(nn.Module):
             nn.Conv2d(128, 64, kernel_size=5, padding=2),
             nn.BatchNorm2d(64),
             nn.ReLU(inplace=True)
-        ).cuda(1)
+        )
         self.dec5 = nn.Sequential(
             nn.Conv2d(64, 64, kernel_size=5, padding=2),
             nn.BatchNorm2d(64),
             nn.ReLU(inplace=True)
-        ).cuda(1)
+        )
 
         self.out = nn.Sequential(
             nn.Conv2d(64, 2, kernel_size=5, padding=2),
             nn.Sigmoid()
-        ).cuda(1)
+        )
 
+    def convlstm(self, i):
+        def custom_forward(*inputs):
+            h, c = self.state[i](
+                inputs[0], (inputs[1], inputs[2])
+            )
+            return h, c
+        return custom_forward
     def forward(self, x, mask, t):
         frame0 = x[:, :3, :, :]
         mask0 = mask[:, :1, :, :]
@@ -207,34 +211,30 @@ class VOS(nn.Module):
         f = f.view(-1, self.seq - 1, 512, 8, 14)
         print(f.shape)
         for i in range(self.seq - 1):
-            c, h = self.state[i](f[:, i, :, :, :], (c, h))
+            c, h = checkpoint(
+                self.state[i], f[:, i, :, :, :], c, h
+            )
             output.append(h)
         output = torch.cat(output, 0)
         print(output.shape)
         output = output.view(self.seq - 1, 512, 8, 14)
         print(output.shape)
-        output = output.cuda(1)
-        id1 = id1.cuda(1)
-        id2 = id2.cuda(1)
-        id3 = id3.cuda(1)
-        id4 = id4.cuda(1)
-        id5 = id5.cuda(1)
         y = F.max_unpool2d(output, id5, 2, 2, output_size = size)
         y = self.dec1(y)
-
+        print(y.shape)
         y = F.max_unpool2d(y, id4, 2, 2)
         y = self.dec2(y)
-
+        print(y.shape)
         y = F.max_unpool2d(y, id3, 2, 2)
         y = self.dec3(y)
-
+        print(y.shape)
         y = F.max_unpool2d(y, id2, 2, 2)
         y = self.dec4(y)
-
+        print(y.shape)
         y = F.max_unpool2d(y, id1, 2, 2)
         del id1, id2, id3, id4, id5
         y = self.dec5(y)
-
+        print(y.shape)
         y = self.out(y)
         t.track()
         print(y.shape)
@@ -254,19 +254,19 @@ if __name__ == '__main__':
     gpu_tracker.track()
     model.cuda().float()
     gpu_tracker.track()
-    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+    optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
     j = 0
     logger = tqdm(train_loader)
     for (a,b) in logger:
-        a = a.float().cuda(0)
+        a = a.float().cuda()
         gpu_tracker.track()
-        b = b.float().cuda(0)
+        b = b.float().cuda()
         gpu_tracker.track()
         output = model(a, b, gpu_tracker)
         output.sum().backward()
         gpu_tracker.track()
         target = b[:, 1:, :, :]
-        target = target.long().cuda(1)
+        target = target.long().cuda()
         target = target.view(-1, 4, 256*448)
         train_loss = 0
         gpu_tracker.track()
