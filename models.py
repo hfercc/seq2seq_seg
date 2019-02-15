@@ -233,15 +233,15 @@ if __name__ == '__main__':
     gpu_tracker = MemTracker(frame)
 
     gpu_tracker.track()
-    model.cuda().half()
+    model.cuda().float()
     gpu_tracker.track()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     j = 0
     logger = tqdm(train_loader)
     for (a,b) in logger:
-        a = a.half().cuda()
+        a = a.float()cuda()
         gpu_tracker.track()
-        b = b.half().cuda()
+        b = b.float().cuda()
         gpu_tracker.track()
         output = model(a, b, gpu_tracker)
         gpu_tracker.track()
