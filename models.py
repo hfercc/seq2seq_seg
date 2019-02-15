@@ -219,7 +219,6 @@ class VOS(nn.Module):
         id3 = id3.cuda(1)
         id4 = id4.cuda(1)
         id5 = id5.cuda(1)
-        size = size.cuda(1)
         y = F.max_unpool2d(output, id5, 2, 2, output_size = size)
         y = self.dec1(y)
 
