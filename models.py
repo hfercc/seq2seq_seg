@@ -205,8 +205,9 @@ class VOS(nn.Module):
             c, h = self.state[i](f[:, i, :, :, :], (c, h))
             output.append(h)
         output = torch.cat(output, 0)
+        print(output.shape)
         output = output.view(-1, self.seq - 1, 512, 8, 14)
-
+        print(output.shape)
         y = F.max_unpool2d(output, id5, 2, 2, output_size = size)
         y = self.dec1(y)
 
