@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 import inspect
 from gpu_mem_track import MemTracker
-from torch.utils.checkpoint import checkpoint_sequential
+from torch.utils.checkpoint import checkpoint
 class ConvLSTMCell(nn.Module):
     """
     Generate a convolutional LSTM cell
@@ -184,45 +184,48 @@ class VOS(nn.Module):
         t.track()
         for i in range(1, int(x.shape[1] / 3)):
             f = x[:, 3*i:3*i+3, :, :]
-            f = self.enc1(f)
-            f, id1 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
-
-            f = self.enc2(f)
-            f, id2 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
-
-            f = self.enc3(f)
-            f, id3 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
-
-            f = self.enc4(f)
-            f, id4 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
-            size = f.size()
-            f = self.enc5(f)
-            f, id5 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
-            t.track()
-            c, h = self.state[i](f, (c, h))
-            y = F.max_unpool2d(h, id5, 2, 2, output_size = size)
-            y = self.dec1(y)
-
-            y = F.max_unpool2d(y, id4, 2, 2)
-            y = self.dec2(y)
-
-            y = F.max_unpool2d(y, id3, 2, 2)
-            y = self.dec3(y)
-
-            y = F.max_unpool2d(y, id2, 2, 2)
-            y = self.dec4(y)
-
-            y = F.max_unpool2d(y, id1, 2, 2)
-            del id1, id2, id3, id4, id5
-            y = self.dec5(y)
-
-            y = self.out(y)
-
+            y = checkpoint(self.single_forward, f, i)
             output.append(y)
             t.track()
         output = torch.cat(output, 1)
         output = output.view(-1, (self.seq - 1), 2, 256 * 448)
         return output
+
+    def single_forward(self, f, i):
+        f = self.enc1(f)
+        f, id1 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
+
+        f = self.enc2(f)
+        f, id2 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
+
+        f = self.enc3(f)
+        f, id3 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
+
+        f = self.enc4(f)
+        f, id4 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
+        size = f.size()
+        f = self.enc5(f)
+        f, id5 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
+        t.track()
+        c, h = self.state[i](f, (c, h))
+        y = F.max_unpool2d(h, id5, 2, 2, output_size = size)
+        y = self.dec1(y)
+
+        y = F.max_unpool2d(y, id4, 2, 2)
+        y = self.dec2(y)
+
+        y = F.max_unpool2d(y, id3, 2, 2)
+        y = self.dec3(y)
+
+        y = F.max_unpool2d(y, id2, 2, 2)
+        y = self.dec4(y)
+
+        y = F.max_unpool2d(y, id1, 2, 2)
+        del id1, id2, id3, id4, id5
+        y = self.dec5(y)
+
+        y = self.out(y)
+        return y
 
 if __name__ == '__main__':
     torch.backends.cudnn.benchmark = True
