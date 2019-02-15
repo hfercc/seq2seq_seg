@@ -182,16 +182,8 @@ class VOS(nn.Module):
         c = self.init_a(tmp)
         h = self.init_b(tmp)
         t.track()
-        for i in range(1, int(x.shape[1] / 3)):
-            f = x[:, 3*i:3*i+3, :, :]
-            y = checkpoint(self.single_forward, f, i)
-            output.append(y)
-            t.track()
-        output = torch.cat(output, 1)
-        output = output.view(-1, (self.seq - 1), 2, 256 * 448)
-        return output
-
-    def single_forward(self, f, i):
+        x = x.view(-1, 3, 256, 448)
+        f = x[3:, :, :, :]
         f = self.enc1(f)
         f, id1 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
 
@@ -206,9 +198,14 @@ class VOS(nn.Module):
         size = f.size()
         f = self.enc5(f)
         f, id5 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
-        t.track()
-        c, h = self.state[i](f, (c, h))
-        y = F.max_unpool2d(h, id5, 2, 2, output_size = size)
+        f = f.view(-1, self.seq - 1, 512, 8, 14)
+        for i in range(self.seq):
+            c, h = self.state[i](f[:, i, :, :, :], (c, h))
+            output.append(h)
+        output = torch.cat(output, 0)
+        output = output.view(-1, self.seq - 1, 512, 8, 14)
+
+        y = F.max_unpool2d(output, id5, 2, 2, output_size = size)
         y = self.dec1(y)
 
         y = F.max_unpool2d(y, id4, 2, 2)
@@ -225,7 +222,10 @@ class VOS(nn.Module):
         y = self.dec5(y)
 
         y = self.out(y)
-        return y
+        t.track()
+        print(y.shape)
+        raise KeyboardInterrupt
+        return output
 
 if __name__ == '__main__':
     torch.backends.cudnn.benchmark = True
@@ -248,7 +248,7 @@ if __name__ == '__main__':
         gpu_tracker.track()
         b = b.float().cuda()
         gpu_tracker.track()
-        output = model(a, b, gpu_tracker)
+        output = checkpoint_sequential(model, 5, a, b)
         output.sum().backward()
         gpu_tracker.track()
         target = b[:, 1:, :, :]
