@@ -64,7 +64,7 @@ class VOS(nn.Module):
         self.init_b = nn.Conv2d(512, 512, 1)
         nn.init.xavier_uniform_(self.init_a.weight)
         nn.init.xavier_uniform_(self.init_b.weight)
-        self.state = [ConvLSTMCell().half().cuda() for i in range(seq)]
+        self.state = [ConvLSTMCell().cuda() for i in range(seq)]
         self.seq = seq
         # Encoder 
 
