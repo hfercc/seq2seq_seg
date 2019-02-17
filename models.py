@@ -278,7 +278,7 @@ if __name__ == '__main__':
             loss = criterion(output[:, i, :, :, :], target[:, i, :, :])
             train_loss += loss.item()
             optimizer.zero_grad()
-            loss.backward()
+            loss.backward(retain=True)
             optimizer.step()
         logger.set_description("{}:Loss:{}".format(j, train_loss / 4))
         j += 1
