@@ -273,13 +273,14 @@ if __name__ == '__main__':
         train_loss = 0
         gpu_tracker.track()
         i = 0
-        
+        loss = []
         for i in range(4):
-            loss = criterion(output[:, i, :, :, :], target[:, i, :, :])
+            loss.append(criterion(output[:, i, :, :, :], target[:, i, :, :]))
             train_loss += loss.item()
-            optimizer.zero_grad()
-            loss.backward(retain=True)
-            optimizer.step()
+        loss = sum(loss)
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
         logger.set_description("{}:Loss:{}".format(j, train_loss / 4))
         j += 1
 
