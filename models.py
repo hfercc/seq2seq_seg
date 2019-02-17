@@ -179,67 +179,48 @@ class VOS(nn.Module):
             )
             return h, c
         return custom_forward
-    def forward(self, x, mask, t):
+    def forward(self, x, mask):
         frame0 = x[:, :3, :, :]
         mask0 = mask[:, :1, :, :]
-        t.track()
         output = []
         init_input = torch.cat((frame0, mask0), 1)
         tmp = self.initializer(init_input)
         c = self.init_a(tmp)
         h = self.init_b(tmp)
-        t.track()
 
         f = x[:, 3:, :, :]
         f = f.view(-1, 3, 256, 448)
-        print(f.shape)
         f = self.enc1(f)
         f, id1 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
-        print(f.shape)
         f = self.enc2(f)
         f, id2 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
-        print(f.shape)
         f = self.enc3(f)
         f, id3 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
-        print(f.shape)
         f = self.enc4(f)
         f, id4 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
         size = f.size()
-        print(f.shape)
         f = self.enc5(f)
         f, id5 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
         f = f.view(-1, self.seq - 1, 512, 8, 14)
-        print(f.shape)
-        t.track()
         for i in range(self.seq - 1):
             c, h = checkpoint(
                 self.convlstm(i), f[:, i, :, :, :], c, h
             )
             output.append(h)
-        t.track()
         output = torch.cat(output, 0)
-        print(output.shape)
         output = output.view(self.seq - 1, 512, 8, 14)
-        print(output.shape)
         y = F.max_unpool2d(output, id5, 2, 2, output_size = size)
         y = self.dec1(y)
-        print(y.shape)
         y = F.max_unpool2d(y, id4, 2, 2)
         y = self.dec2(y)
-        print(y.shape)
         y = F.max_unpool2d(y, id3, 2, 2)
         y = self.dec3(y)
-        print(y.shape)
         y = F.max_unpool2d(y, id2, 2, 2)
         y = self.dec4(y)
-        print(y.shape)
         y = F.max_unpool2d(y, id1, 2, 2)
         del id1, id2, id3, id4, id5
         y = self.dec5(y)
-        print(y.shape)
         y = self.out(y)
-        t.track()
-        print(y.shape)
         y = y.view(-1, self.seq-1, 2, 256, 448)
         return y
 
@@ -247,30 +228,20 @@ if __name__ == '__main__':
     torch.backends.cudnn.benchmark = True
     dataset = YoutubeDataset()
     criterion = nn.CrossEntropyLoss()
-    train_loader = DataLoader(dataset, batch_size=1, shuffle=True, num_workers=2)
+    train_loader = DataLoader(dataset, batch_size=2, shuffle=True, num_workers=2)
     model = VOS(5)
-
-    frame = inspect.currentframe()
-    gpu_tracker = MemTracker(frame)
-
-    gpu_tracker.track()
     model.cuda().float()
-    gpu_tracker.track()
     optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
     j = 0
     logger = tqdm(train_loader)
     for (a,b) in logger:
         a = a.float().cuda()
-        gpu_tracker.track()
         b = b.float().cuda()
-        gpu_tracker.track()
-        output = model(a, b, gpu_tracker)
-        gpu_tracker.track()
+        output = model(a, b)
         target = b[:, 1:, :, :]
         target = target.long().cuda()
         target = target.view(-1, 4, 256, 448)
         train_loss = 0
-        gpu_tracker.track()
         i = 0
         loss = []
         for i in range(4):
