@@ -189,6 +189,7 @@ class VOS(nn.Module):
         h = self.init_b(tmp)
 
         f = x[:, 3:, :, :]
+        f = f.contiguous()
         f = f.view(-1, 3, 256, 448)
         f = self.enc1(f)
         f, id1 = F.max_pool2d(f, kernel_size=2, stride=2, return_indices=True)
@@ -240,6 +241,7 @@ if __name__ == '__main__':
         output = model(a, b)
         target = b[:, 1:, :, :]
         target = target.long().cuda()
+        target = target.contiguous()
         target = target.view(-1, 4, 256, 448)
         train_loss = 0
         i = 0
