@@ -240,7 +240,8 @@ class VOS(nn.Module):
         y = self.out(y)
         t.track()
         print(y.shape)
-        return output
+        y = y.view(-1, self.seq-1, 2, 256, 448)
+        return y
 
 if __name__ == '__main__':
     torch.backends.cudnn.benchmark = True
@@ -272,9 +273,9 @@ if __name__ == '__main__':
         train_loss = 0
         gpu_tracker.track()
         i = 0
-        loss = criterion(output[:, i, :, :], target[:, i, :])
+        loss = criterion(output[:, :, i, :, :], target[:, :, i, :])
         for i in range(1, 4):
-            loss += criterion(output[:, i, :, :], target[:, i, :])
+            loss += criterion(output[:, :, i, :, :], target[:, :, i, :])
             gpu_tracker.track()
         optimizer.zero_grad()
         loss.backward()
