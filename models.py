@@ -269,7 +269,7 @@ if __name__ == '__main__':
         gpu_tracker.track()
         target = b[:, 1:, :, :]
         target = target.long().cuda()
-        target = target.view(-1, 4, 256*448)
+        target = target.view(-1, 4, 256, 448)
         train_loss = 0
         gpu_tracker.track()
         i = 0
