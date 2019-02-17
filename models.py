@@ -276,12 +276,11 @@ if __name__ == '__main__':
         loss = []
         for i in range(4):
             loss.append(criterion(output[:, i, :, :, :], target[:, i, :, :]))
-            train_loss += loss.item()
         loss = sum(loss)
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        logger.set_description("{}:Loss:{}".format(j, train_loss / 4))
+        logger.set_description("{}:Loss:{}".format(j, loss.item()))
         j += 1
 
 
