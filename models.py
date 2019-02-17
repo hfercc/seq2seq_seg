@@ -255,5 +255,25 @@ if __name__ == '__main__':
         optimizer.step()
         logger.set_description("{}:Loss:{}".format(j, loss.item()/batch_size))
         j += 1
-
-
+    test_loss = 0
+    test_dataset = YoutubeDataset(split="test")
+    test_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=2)
+    for (a,b) in test_logger:
+        a = a.float().cuda()
+        b = b.float().cuda()
+        output = model(a, b)
+        target = b[:, 1:, :, :]
+        target = target.long().cuda()
+        target = target.contiguous()
+        target = target.view(-1, 4, 256, 448)
+        train_loss = 0
+        i = 0
+        loss = []
+        for i in range(4):
+            loss.append(criterion(output[:, i, :, :, :], target[:, i, :, :]))
+        loss = sum(loss)
+        test_loss += loss.item()
+        logger.set_description("{}:Loss:{}".format(j, loss.item()/batch_size))
+        j += 1
+    print(test_loss / len(test_loader))
+    torch.save(model, 'model.pth.tar')
