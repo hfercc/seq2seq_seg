@@ -8,7 +8,7 @@ from tqdm import tqdm
 import inspect
 from gpu_mem_track import MemTracker
 from torch.utils.checkpoint import checkpoint
-batch_size = 4
+batch_size = 2
 class ConvLSTMCell(nn.Module):
     """
     Generate a convolutional LSTM cell
