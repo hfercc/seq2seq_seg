@@ -8,6 +8,7 @@ from tqdm import tqdm
 import inspect
 from gpu_mem_track import MemTracker
 from torch.utils.checkpoint import checkpoint
+batch_size = 4
 class ConvLSTMCell(nn.Module):
     """
     Generate a convolutional LSTM cell
@@ -229,7 +230,7 @@ if __name__ == '__main__':
     torch.backends.cudnn.benchmark = True
     dataset = YoutubeDataset()
     criterion = nn.CrossEntropyLoss()
-    train_loader = DataLoader(dataset, batch_size=2, shuffle=True, num_workers=2)
+    train_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=2)
     model = VOS(5)
     model.cuda().float()
     optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
@@ -252,7 +253,7 @@ if __name__ == '__main__':
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        logger.set_description("{}:Loss:{}".format(j, loss.item()))
+        logger.set_description("{}:Loss:{}".format(j, loss.item()/batch_size))
         j += 1
 
 
