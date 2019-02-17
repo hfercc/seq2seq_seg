@@ -240,7 +240,6 @@ class VOS(nn.Module):
         y = self.out(y)
         t.track()
         print(y.shape)
-        raise KeyboardInterrupt
         return output
 
 if __name__ == '__main__':
