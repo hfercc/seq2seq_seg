@@ -209,7 +209,7 @@ class VOS(nn.Module):
             )
             output.append(h)
         output = torch.cat(output, 0)
-        output = output.view(-1, self.seq - 1, 512, 8, 14)
+        output = output.view(-1, 512, 8, 14)
         y = F.max_unpool2d(output, id5, 2, 2, output_size = size)
         y = self.dec1(y)
         y = F.max_unpool2d(y, id4, 2, 2)
