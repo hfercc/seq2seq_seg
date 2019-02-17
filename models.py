@@ -273,9 +273,9 @@ if __name__ == '__main__':
         train_loss = 0
         gpu_tracker.track()
         i = 0
-        loss = criterion(output[:, :, i, :, :], target[:, :, i, :])
+        loss = criterion(output[:, i, :, :, :], target[:, i, :, :])
         for i in range(1, 4):
-            loss += criterion(output[:, :, i, :, :], target[:, :, i, :])
+            loss += criterion(output[:, i, :, :, :], target[:, i, :, :])
             gpu_tracker.track()
         optimizer.zero_grad()
         loss.backward()
