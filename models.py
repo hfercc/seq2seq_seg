@@ -230,8 +230,8 @@ if __name__ == '__main__':
     torch.backends.cudnn.benchmark = True
     dataset = YoutubeDataset()
     criterion = nn.CrossEntropyLoss()
-    train_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=2)
-    model = VOS(5)
+    train_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=2, seq_len=9)
+    model = VOS(9)
     model.cuda().float()
     optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
     j = 0
@@ -257,7 +257,8 @@ if __name__ == '__main__':
         j += 1
     test_loss = 0
     test_dataset = YoutubeDataset(split="test")
-    test_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=2)
+    test_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=2, seq_len=9)
+    test_logger = tqdm(test_loader)
     for (a,b) in test_logger:
         a = a.float().cuda()
         b = b.float().cuda()
