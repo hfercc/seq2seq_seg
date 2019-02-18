@@ -228,6 +228,7 @@ class VOS(nn.Module):
 
 if __name__ == '__main__':
     torch.backends.cudnn.benchmark = True
+    seq_len=9
     dataset = YoutubeDataset(seq_len=9)
     criterion = nn.CrossEntropyLoss()
     train_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=2)
@@ -243,11 +244,11 @@ if __name__ == '__main__':
         target = b[:, 1:, :, :]
         target = target.long().cuda()
         target = target.contiguous()
-        target = target.view(-1, 4, 256, 448)
+        target = target.view(-1, seq_len-1, 256, 448)
         train_loss = 0
         i = 0
         loss = []
-        for i in range(4):
+        for i in range(seq_len-1):
             loss.append(criterion(output[:, i, :, :, :], target[:, i, :, :]))
         loss = sum(loss)
         optimizer.zero_grad()
@@ -266,11 +267,11 @@ if __name__ == '__main__':
         target = b[:, 1:, :, :]
         target = target.long().cuda()
         target = target.contiguous()
-        target = target.view(-1, 4, 256, 448)
+        target = target.view(-1, seq_len-1, 256, 448)
         train_loss = 0
         i = 0
         loss = []
-        for i in range(4):
+        for i in range(seq_len-1):
             loss.append(criterion(output[:, i, :, :, :], target[:, i, :, :]))
         loss = sum(loss)
         test_loss += loss.item()
