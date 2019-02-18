@@ -228,9 +228,9 @@ class VOS(nn.Module):
 
 if __name__ == '__main__':
     torch.backends.cudnn.benchmark = True
-    dataset = YoutubeDataset()
+    dataset = YoutubeDataset(seq_len=9)
     criterion = nn.CrossEntropyLoss()
-    train_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=2, seq_len=9)
+    train_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=2)
     model = VOS(9)
     model.cuda().float()
     optimizer = torch.optim.SGD(model.parameters(), lr=0.001)
@@ -256,8 +256,8 @@ if __name__ == '__main__':
         logger.set_description("{}:Loss:{}".format(j, loss.item()/batch_size))
         j += 1
     test_loss = 0
-    test_dataset = YoutubeDataset(split="test")
-    test_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=2, seq_len=9)
+    test_dataset = YoutubeDataset(split="test", seq_len=9)
+    test_loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=2)
     test_logger = tqdm(test_loader)
     for (a,b) in test_logger:
         a = a.float().cuda()
